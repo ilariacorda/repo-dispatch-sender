@@ -1,0 +1,24 @@
+name: Send Dispatch on Tag
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - '!v*-*'
+  workflow_dispatch:  #Manual run option for testing purposes
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send repository_dispatch to receiver repo
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.TEST_DISPATCH_TOKEN }}
+          repository: ilariacorda/repo-dispatch-receiver
+          event-type: test-dispatch
+          client-payload: |
+            {
+              "version": "${{ github.ref_name || 'manual-test' }}",
+              "repo": "${{ github.repository }}"
+            }
